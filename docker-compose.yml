@@ -1,0 +1,20 @@
+services:
+  wal-retention-api:
+    build: .
+    image: wal-retention-rehearsal:1.0.0
+    container_name: wal-retention-api
+    ports:
+      - "8000:8000"
+    environment:
+      WAL_REHEARSAL_DB: /data/wal_retention.db
+    volumes:
+      - wal_retention_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  wal_retention_data:
